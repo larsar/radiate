@@ -17,7 +17,7 @@ class Radiate:
     wave_device = None
     mqtt_client = None
 
-    def conv2radon(radon_raw):
+    def conv2radon(self, radon_raw):
         radon = "N/A"  # Either invalid measurement, or not available
         if 0 <= radon_raw <= 16383:
             radon = radon_raw
@@ -43,8 +43,8 @@ class Radiate:
                 data = unpack('BBBBHHHHHHHH', raw)
                 measurement['sensor_version'] = data[0]
                 measurement['humidity'] = data[1] / 2.0
-                measurement['radon_short_term_avg'] = Radiate.conv2radon(data[4])
-                measurement['radon_long_term_avg'] = Radiate.conv2radon(data[5])
+                measurement['radon_short_term_avg'] = self.conv2radon(data[4])
+                measurement['radon_long_term_avg'] = self.conv2radon(data[5])
                 measurement['temperature'] = data[6] / 100.0
                 measurement['timestamp'] = datetime.now().isoformat()
                 measurement['id'] = str(uuid4())
@@ -89,22 +89,18 @@ class Radiate:
         if args.mqtt and not args.topic:
             parser.error('Provide also a --topic when you use --mqtt')
         if args.mqtt:
-            try:
-                import paho.mqtt.client as mqtt
-                self.mqtt_client = mqtt.Client("radiate")
-                self.mqtt_client.connected_flag = False
-                if args.username:
-                    password = os.environ.get('MQTT_PASSWORD', None)
-                    self.mqtt_client.username_pw_set(args.username, password=password)
-                self.mqtt_client.loop_start()
-                self.mqtt_client.on_connect = self.on_connect
-                self.mqtt_client.connect(args.mqtt)
-                while not self.mqtt_client.connected_flag:  # wait in loop
-                    print("Waiting for MQTT connection...")
-                    time.sleep(1)
-            except Exception as e:  # unsure which exceptions connect can cause, so need to catch everything
-                print('Could not connect to MQTT broker: {}'.format(e))
-                client = None
+            import paho.mqtt.client as mqtt
+            self.mqtt_client = mqtt.Client("radiate")
+            self.mqtt_client.connected_flag = False
+            if args.username:
+                password = os.environ.get('MQTT_PASSWORD', None)
+                self.mqtt_client.username_pw_set(args.username, password=password)
+            self.mqtt_client.loop_start()
+            self.mqtt_client.on_connect = self.on_connect
+            self.mqtt_client.connect(args.mqtt)
+            while not self.mqtt_client.connected_flag:
+                print("Waiting for MQTT connection...")
+                time.sleep(1)
         else:
             client = None
         while True:

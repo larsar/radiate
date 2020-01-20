@@ -51,7 +51,7 @@ like mobile apps, can communicate with the device.
 ```
 # Reads the sensor every 5 seconds and prints the sensor data
 $ python radiate.py --wait 5 e0:7d:ea:08:22:66
-{'sensor_version': 1, 'humidity': 53.0, 'radon_short_term_avg': 132, 'radon_long_term_avg': 84, 'temperature': 12.74, 'timestamp': '2020-01-15T20:06:34.568825', 'ID': 'fff9469f-0d17-4040-853d-c0ceea1107ad'}
+{'sensor_version': 1, 'humidity': 53.0, 'radon_short_term_avg': 132, 'radon_long_term_avg': 84, 'temperature': 12.74, 'timestamp': '2020-01-15T20:06:34.568825', 'id': 'fff9469f-0d17-4040-853d-c0ceea1107ad'}
 ```
 
 ```
